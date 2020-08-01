@@ -9,23 +9,39 @@ test('create user', async ({ client }) => {
         password: "123456"
     }).end()
 
-    response.assertStatus(200)
+    response.assertStatus(201)
     response.assertJSONSubset({
-        status: "200"
+        message: "Usuário cadastrado com sucesso"
     })
 })
 
 test("don't create empty user", async ({ client, assert }) => {
     const response = await client.post('/register').end()
-    response.assertStatus(500)
+    response.assertStatus(204)
 })
 
-test("don't create a user if contain e-mail or username already resisted", async ({ client, assert }) => {
+test("don't create a user if contain e-mail already registered", async ({ client, assert }) => {
     const response = await client.post('/register').send({
-        username: "maxiii233",
+        username: "maxi",
         email: "maxhariell23@gmail.com",
         password: "123456"
     }).end()
 
-    response.assertStatus(500)
+    response.assertStatus(409)
+    response.assertJSONSubset({
+        message: "E-mail já cadastrado"
+    })
+})
+
+test("don't create a user if contain username already registered", async ({ client, assert }) => {
+    const response = await client.post('/register').send({
+        username: "maxiii233",
+        email: "maxhariell238@gmail.com",
+        password: "123456"
+    }).end()
+
+    response.assertStatus(409)
+    response.assertJSONSubset({
+        message: "Username já cadastrado"
+    })
 })
