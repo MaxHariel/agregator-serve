@@ -41,23 +41,23 @@ class InterestedSubjectController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({ request, response, auth }) {    
+  async store({ request, response, auth }) {
     try {
-      const { subject, description} = request.all();
-        let cloudnaryResponse;
-         if(request.file('file')) {
-            cloudnaryResponse = await Cloudnary.upload(request.file('file'));
-          //  return response.json(cloudnaryResponse);
-         }
-         const interestedSubject = await InterestedSubject.create({
-             user_id: auth.user.id,
-             interested_name: subject,
-             description: description,
-             image_url: cloudnaryResponse.url
-           });
-           return response.status(200).json({status: true, data: interestedSubject});
+      const { subject, description } = request.all();
+      let cloudnaryResponse;
+      if (request.file('file')) {
+        cloudnaryResponse = await Cloudnary.upload(request.file('file'));
+        //  return response.json(cloudnaryResponse);
+      }
+      const interestedSubject = await InterestedSubject.create({
+        user_id: auth.user.id,
+        interested_name: subject,
+        description: description,
+        image_url: cloudnaryResponse.url
+      });
+      return response.status(200).json({ data: interestedSubject });
     } catch (error) {
-      return response.status(500).json({status: false, error: error.message });
+      return response.status(500).json({ message: error.message });
     }
   }
 
@@ -83,16 +83,16 @@ class InterestedSubjectController {
       access_token_key: Env.get('TWITTER_TOKEN_KEY'),
       access_token_secret: Env.get('TWITTER_TOKEN_SECRET'),
     });
-    
-    const twitterParams = { q : subject.interested_name, result_type:'mixed', count:'5' };
+
+    const twitterParams = { q: subject.interested_name, result_type: 'mixed', count: '5' };
     const twitterResponse = await twitterClient.get('search/tweets.json', twitterParams)
 
-    
+
     // const youtube = youtubeResponse.data.items
     const reddit = redditResponse.data.data.children;
     const twitter = twitterResponse.statuses;
 
-    return { reddit, twitter};
+    return { reddit, twitter };
 
   }
 

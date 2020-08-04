@@ -20,9 +20,14 @@ class AuthController {
     }
 
     async authenticate({ request, response, auth }) {
-        const { email, password } = request.all()
-        const token = await auth.attempt(email, password)
-        return token;
+        try {
+            const { email, password } = request.all()
+            const token = await auth.attempt(email, password)
+            response.status(200).json({ token })
+        } catch (error) {
+            console.log(error)
+            response.status(500).json({ message: "Senha ou e-mail incorretos" })
+        }
     }
 
     async app() {

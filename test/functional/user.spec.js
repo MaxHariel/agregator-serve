@@ -45,3 +45,11 @@ test("don't create a user if contain username already registered", async ({ clie
         message: "Username já cadastrado"
     })
 })
+
+test("authenticate user", async ({ client, assert }) => {
+    const response = await client.post('/authenticate').send({
+        email: "maxhariell23@gmail.com",
+        password: "123456"
+    }).end()
+    response.assertStatus(200)
+})
